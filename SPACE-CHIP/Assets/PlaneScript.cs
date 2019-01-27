@@ -17,7 +17,6 @@ public class PlaneScript : MonoBehaviour
         if (transform.position.x > 35 || transform.position.x < -35)
         {
             direction = -direction;
-            Debug.Log(direction);
             Vector3 scale = new Vector3(transform.localScale.x, -transform.localScale.y, transform.localScale.z);
             transform.localScale = scale;
 

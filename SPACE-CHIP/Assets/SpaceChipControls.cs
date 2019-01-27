@@ -34,7 +34,7 @@ public class SpaceChipControls : MonoBehaviour
 
     private void Update()
     {
-        if (timerTurbo > 2f)
+        if (timerTurbo > 1.5f && !disabled)
         {
             NoVisualFeedback();
 
@@ -67,14 +67,14 @@ public class SpaceChipControls : MonoBehaviour
                 else
                 {
                     force.relativeForce = new Vector2(0, Mathf.Clamp(timeTurboin, 0, 18));
-                    rigid.AddRelativeForce(new Vector2(0, 12), ForceMode2D.Impulse);
+                    rigid.AddRelativeForce(new Vector2(0, 25), ForceMode2D.Impulse);
 
                 }
                 timerTurbo = 0f;
                 readyToControl = true;
 
                 // resets gravity
-                rigid.gravityScale = 0.2f;
+                rigid.gravityScale = 0.5f;
 
                 vibration();
             }
@@ -91,7 +91,7 @@ public class SpaceChipControls : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (readyToControl)
+        if (readyToControl && !disabled)
         {
             ShipMovement();
         }
@@ -136,7 +136,7 @@ public class SpaceChipControls : MonoBehaviour
 
         if (turbo)
         {
-            force.relativeForce = new Vector2(0, Mathf.Lerp(force.relativeForce.y, 0, 0.1f * Time.deltaTime));
+            force.relativeForce = new Vector2(0, Mathf.Lerp(force.relativeForce.y, 0, 0.35f * Time.deltaTime));
             anim.SetFloat("speed", Mathf.Clamp(force.relativeForce.y / 2f, 1f, 3f));
         }
 
@@ -177,7 +177,6 @@ public class SpaceChipControls : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         StopVibration();
     }
-
     private void StopVibration()
     {
         spaceCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>().m_AmplitudeGain = 0f;
@@ -189,14 +188,13 @@ public class SpaceChipControls : MonoBehaviour
     {
 
         StartCoroutine(ShipComeback(2F));
-        DisableShip();
+        DisableShip(4f);
     }
 
     public void SpaceChipDead()
     {
-        Debug.Log("hy");
-        StartCoroutine(ShipComeback(20F));
-        DisableShip();
+        StartCoroutine(ShipDead(10F));
+        DisableShip(20f);
     }
 
     public void ResetChip()
@@ -209,28 +207,33 @@ public class SpaceChipControls : MonoBehaviour
     {
         yield return new WaitForSeconds(waitTime);
         disabled = false;
-        rigid.gravityScale = 0.2f;
+        rigid.gravityScale = 0.5f;
         StartCoroutine(ReadyToControl(0.5F));
-
-
     }
+    IEnumerator ShipDead(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        disabled = false;
+        rigid.gravityScale = 0f;
+    }
+
 
     IEnumerator ReadyToControl(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        rigid.gravityScale = 0.2f;
+        rigid.gravityScale = 0.5f;
     }
 
 
 
-    private void DisableShip()
+    private void DisableShip(float _gravity)
     {
         if (!disabled)
         {
             disabled = true;
 
             //Gravity increased
-            rigid.gravityScale = 4f;
+            rigid.gravityScale = _gravity;
             anim.SetTrigger("GetHit");
         }
     }

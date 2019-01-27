@@ -10,6 +10,10 @@ public class Starting : MonoBehaviour
 
     Rigidbody2D manibelaRigid;
 
+    AudioSource manibelaLoop, manibelaTope;
+    [SerializeField]
+    float desiredLoopVolume = 1;
+
 
     // Start is called before the first frame update
     void Start()
@@ -18,6 +22,18 @@ public class Starting : MonoBehaviour
 
         Preparation();
         manibelaRigid = transform.Find("manibelaFinal").GetComponent<Rigidbody2D>();
+
+        foreach (AudioSource audio in GetComponentsInChildren<AudioSource>())
+        {
+            if (audio.clip.name == "Manivela loop")
+            {
+                manibelaLoop = audio;
+            }
+            else if (audio.clip.name == "Tope manivela")
+            {
+                manibelaTope = audio;
+            }
+        }
     }
 
     // Update is called once per frame
@@ -36,10 +52,21 @@ public class Starting : MonoBehaviour
 
             //manibela
             manibelaRigid.MoveRotation(manibelaRigid.rotation + (-horizontal * 200 * Time.deltaTime));
+            if (Input.GetAxis("Horizontal") != 0)
+            {
+                manibelaLoop.volume = desiredLoopVolume;
+            }
+            else
+            {
+                manibelaLoop.volume = 0;
+            }
 
         }
-        if (yPosition > 10f)
+        if (yPosition > 10f && !shipready)
         {
+            manibelaTope.Play();
+            manibelaLoop.volume = 0;
+
             shipready = true;
             spaceControls.enabled = true;
         }
