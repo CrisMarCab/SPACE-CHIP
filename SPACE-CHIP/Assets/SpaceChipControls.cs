@@ -310,7 +310,7 @@ public class SpaceChipControls : MonoBehaviour
             disabled = true;
 
             //Gravity increased
-            rigid.gravityScale = 4f;
+            rigid.gravityScale = 8f;
             anim.SetTrigger("GetHit");
         }
     }
