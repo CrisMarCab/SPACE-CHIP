@@ -25,7 +25,7 @@ public class SpaceChipControls : MonoBehaviour
 
 
     //SFX
-    AudioSource launchLoop, launchExplosion, loadLoop, loadedExplosion, collision, loopFalling, backgroundMusic;
+    public AudioSource launchLoop, launchExplosion, loadLoop, loadedExplosion, collision, loopFalling, backgroundMusic;
     // Start is called before the first frame update
     void Awake()
     {
@@ -104,7 +104,6 @@ public class SpaceChipControls : MonoBehaviour
                 //First launch
                 if (!readyToControl)
                 {
-
                     vibrationLoop();
                     timeTurboin += 48f * Time.deltaTime;
                 }
@@ -112,6 +111,8 @@ public class SpaceChipControls : MonoBehaviour
                 else
                 {
                     timeTurboin += 24f * Time.deltaTime;
+                    force.relativeForce = new Vector2(0, Mathf.Lerp(force.relativeForce.y, 0, 0.5f * Time.deltaTime));
+
                 }
             }
             if (Input.GetKeyUp("space"))
@@ -204,7 +205,7 @@ public class SpaceChipControls : MonoBehaviour
 
         if (turbo)
         {
-            force.relativeForce = new Vector2(0, Mathf.Lerp(force.relativeForce.y, 0, 0.005f * Time.deltaTime));
+            force.relativeForce = new Vector2(0, Mathf.Lerp(force.relativeForce.y, 0, 0.05f * Time.deltaTime));
             anim.SetFloat("speed", Mathf.Clamp(force.relativeForce.y / 2f, 1f, 3f));
         }
 
@@ -269,6 +270,7 @@ public class SpaceChipControls : MonoBehaviour
     public void SpaceChipDead()
     {
         loopFalling.Play();
+        loopFalling.volume = 0.2f;
         DisableShip();
 
     }
@@ -292,6 +294,7 @@ public class SpaceChipControls : MonoBehaviour
         disabled = false;
         rigid.gravityScale = 0f;
         loopFalling.Stop();
+        loopFalling.volume = 0;
 
     }
 

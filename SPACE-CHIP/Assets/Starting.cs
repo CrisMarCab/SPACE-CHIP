@@ -90,9 +90,12 @@ public class Starting : MonoBehaviour
             manibelaTope.Play();
             manibelaLoop.volume = 0;
 
+
             shipready = true;
             spaceControls.enabled = true;
             spaceControls.disabled = false;
+            spaceControls.loopFalling.Stop();
+
         }
     }
 
@@ -102,6 +105,7 @@ public class Starting : MonoBehaviour
         virtualCamera.enabled = true;
         spaceControls.rigid.gravityScale = 0f;
         spaceControls.ResetChip();
+        spaceControls.loopFalling.Stop();
 
         spaceControls.enabled = false;
 
