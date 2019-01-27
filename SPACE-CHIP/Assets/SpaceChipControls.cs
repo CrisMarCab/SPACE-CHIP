@@ -5,13 +5,12 @@ using UnityEngine;
 public class SpaceChipControls : MonoBehaviour
 {
     public Rigidbody2D rigid;
-    ConstantForce2D force;
+    public ConstantForce2D force;
     float turn = 100, timer;
     Vector2 mouseOld, oldDirection;
     Vector2 positionCentered;
 
-    public float clampMinusX, clampSumX, timeTurboin, timerTurbo, zPosition;
-    [SerializeField]
+    public float clampMinusX, clampSumX, timeTurboin, timerTurbo = 2f, zPosition;
     bool turbo, disabled, readyToControl;
     Vector3 oldPosition;
 
@@ -34,7 +33,7 @@ public class SpaceChipControls : MonoBehaviour
         anim = transform.GetComponentInChildren<Animator>();
         particleSystem0 = transform.Find("Ship").GetComponentInChildren<ParticleSystem>();
         spaceCamera = FindObjectOfType<CinemachineVirtualCamera>();
-        foreach (AudioSource audio in GetComponentsInChildren<AudioSource>())
+        foreach (AudioSource audio in transform.Find("SFX").GetComponents<AudioSource>())
         {
             if (audio.clip.name == "Espacio mantenido despegue")
             {
@@ -67,6 +66,10 @@ public class SpaceChipControls : MonoBehaviour
 
         }
     }
+    void Start()
+    {
+        timerTurbo = 2f;
+    }
 
     private void Update()
     {
@@ -76,8 +79,6 @@ public class SpaceChipControls : MonoBehaviour
 
             if (Input.GetKeyDown("space"))
             {
-                Debug.Log("hello" +
-                    "");
                 if (!backgroundMusic.isPlaying)
                 {
                     backgroundMusic.Play();
@@ -129,8 +130,8 @@ public class SpaceChipControls : MonoBehaviour
                 //REst
                 else
                 {
-                    force.relativeForce = new Vector2(0, Mathf.Clamp(timeTurboin, 0, 18));
-                    rigid.AddRelativeForce(new Vector2(0, 25), ForceMode2D.Impulse);
+                    force.relativeForce = new Vector2(0, Mathf.Clamp(timeTurboin, 0, 26));
+                    rigid.AddRelativeForce(new Vector2(0, 10), ForceMode2D.Impulse);
                     loadedExplosion.Play();
                     loadLoop.Stop();
                 }
@@ -138,6 +139,7 @@ public class SpaceChipControls : MonoBehaviour
 
                 // resets gravity
                 rigid.gravityScale = 0.5f;
+                readyToControl = true;
 
                 vibration();
             }
@@ -200,7 +202,7 @@ public class SpaceChipControls : MonoBehaviour
 
         if (turbo)
         {
-            force.relativeForce = new Vector2(0, Mathf.Lerp(force.relativeForce.y, 0, 0.35f * Time.deltaTime));
+            force.relativeForce = new Vector2(0, Mathf.Lerp(force.relativeForce.y, 0, 0.005f * Time.deltaTime));
             anim.SetFloat("speed", Mathf.Clamp(force.relativeForce.y / 2f, 1f, 3f));
         }
 
@@ -250,20 +252,22 @@ public class SpaceChipControls : MonoBehaviour
 
     private void SpaceChipHitted()
     {
-        anim.SetBool("Control", false);
-        StartCoroutine(ShipComeback(2F));
-        DisableShip(4f);
-        if (!collision.isPlaying)
+        if (!disabled)
         {
-            collision.Play();
+            anim.SetBool("Control", false);
+            StartCoroutine(ShipComeback(2F));
+            StutterShip();
+            if (!collision.isPlaying)
+            {
+                collision.Play();
+            }
         }
     }
 
     public void SpaceChipDead()
     {
-        StartCoroutine(ShipDead(10F));
-        DisableShip(20f);
         loopFalling.Play();
+        DisableShip();
 
     }
 
@@ -281,9 +285,8 @@ public class SpaceChipControls : MonoBehaviour
         rigid.gravityScale = 1f;
         StartCoroutine(ReadyToControl(0.5F));
     }
-    IEnumerator ShipDead(float waitTime)
+    private void ShipDead()
     {
-        yield return new WaitForSeconds(5);
         disabled = false;
         rigid.gravityScale = 0f;
         loopFalling.Stop();
@@ -298,15 +301,25 @@ public class SpaceChipControls : MonoBehaviour
     }
 
 
-
-    private void DisableShip(float _gravity)
+    private void StutterShip()
     {
         if (!disabled)
         {
             disabled = true;
 
             //Gravity increased
-            rigid.gravityScale = _gravity;
+            rigid.gravityScale = 4f;
+            anim.SetTrigger("GetHit");
+        }
+    }
+    private void DisableShip()
+    {
+        if (!disabled)
+        {
+            disabled = true;
+
+            //Gravity increased
+            rigid.gravityScale = 40f;
             anim.SetTrigger("GetHit");
         }
     }
@@ -314,11 +327,17 @@ public class SpaceChipControls : MonoBehaviour
     void OnEnable()
     {
         SpaceShipCollision.OnCollision += SpaceChipHitted;
+        SpaceShipCollision.OnCollisionDeadly += SpaceChipDead;
+
+        Starting.home += ShipDead;
+
     }
     void OnDisable()
     {
         SpaceShipCollision.OnCollision -= SpaceChipHitted;
+        SpaceShipCollision.OnCollisionDeadly -= SpaceChipDead;
+        Starting.home -= ShipDead;
+
+
     }
-
-
 }

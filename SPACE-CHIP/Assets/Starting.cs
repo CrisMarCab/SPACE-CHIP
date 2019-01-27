@@ -10,9 +10,12 @@ public class Starting : MonoBehaviour
 
     Rigidbody2D manibelaRigid;
 
-    AudioSource manibelaLoop, manibelaTope;
+    AudioSource manibelaLoop, manibelaTope, Narrative1, Narrative2, Narrative3, Narrative4;
     [SerializeField]
     float desiredLoopVolume = 1;
+
+    [SerializeField] GameObject level1, level2, level3, level4;
+    bool boolNivel1, boolNivel2, boolNivel3;
 
 
     // Start is called before the first frame update
@@ -20,7 +23,6 @@ public class Starting : MonoBehaviour
     {
         spaceControls = FindObjectOfType<SpaceChipControls>();
 
-        Preparation();
         manibelaRigid = transform.Find("manibelaFinal").GetComponent<Rigidbody2D>();
 
         foreach (AudioSource audio in GetComponentsInChildren<AudioSource>())
@@ -33,14 +35,31 @@ public class Starting : MonoBehaviour
             {
                 manibelaTope = audio;
             }
+            else if (audio.clip.name == "1Fall")
+            {
+                Narrative1 = audio;
+            }
+            else if (audio.clip.name == "2Wind")
+            {
+                Narrative2 = audio;
+            }
+            else if (audio.clip.name == "3Cloud")
+            {
+                Narrative3 = audio;
+            }
+            else if (audio.clip.name == "4Home")
+            {
+                Narrative4 = audio;
+            }
         }
 
+        Preparation(true);
 
 
-        }
+    }
 
-        // Update is called once per frame
-        void Update()
+    // Update is called once per frame
+    void Update()
     {
         if (!shipready)
         {
@@ -55,6 +74,7 @@ public class Starting : MonoBehaviour
 
             //manibela
             manibelaRigid.MoveRotation(manibelaRigid.rotation + (-horizontal * 200 * Time.deltaTime));
+
             if (Input.GetAxis("Horizontal") != 0)
             {
                 manibelaLoop.volume = desiredLoopVolume;
@@ -76,12 +96,12 @@ public class Starting : MonoBehaviour
     }
 
 
-    private void Preparation()
+    private void Preparation(bool firstfirsttime)
     {
         virtualCamera.enabled = true;
-
         spaceControls.rigid.gravityScale = 0f;
         spaceControls.ResetChip();
+
         spaceControls.enabled = false;
 
         //Reset position
@@ -92,6 +112,44 @@ public class Starting : MonoBehaviour
 
         spaceControls.transform.rotation = Quaternion.identity;
         shipready = false;
+
+        if (!firstfirsttime)
+        {
+            Narration();
+        }
+    }
+
+    private void Narration()
+    {
+        if (level1.activeSelf && !level2.activeSelf && !level3.activeSelf)
+        {
+            if (!boolNivel1)
+            {
+                //play narrative
+                Narrative1.Play();
+                boolNivel1 = true;
+            }
+        }
+        if (level1.activeSelf && level2.activeSelf && !level3.activeSelf)
+        {
+            if (!boolNivel2)
+            {
+                //play narrative
+                Narrative2.Play();
+                boolNivel2 = true;
+
+            }
+        }
+        if (level1.activeSelf && level2.activeSelf && level3.activeSelf)
+        {
+            if (!boolNivel3)
+            {
+                //play narrative                
+                Narrative3.Play();
+                boolNivel3 = true;
+
+            }
+        }
     }
 
 
@@ -99,7 +157,7 @@ public class Starting : MonoBehaviour
     {
         if (shipready)
         {
-            Preparation();
+            Preparation(false);
         }
     }
 }

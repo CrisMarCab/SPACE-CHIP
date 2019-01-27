@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class Messages : MonoBehaviour
 {
-    [SerializeField] List<Transform> bocatas = new List<Transform>();
+    [SerializeField] List<Globo1script> globos = new List<Globo1script>();
     SpaceChipControls spacechipControls;
     int index = 0;
 
 
-    [SerializeField] GameObject globosFirs, globosSecond, nextLevel;
+    [SerializeField] GameObject globosFirs, globosSecond, nextLevel, enemiesToAppear;
+
     bool firstTime;
 
 
@@ -30,13 +31,20 @@ public class Messages : MonoBehaviour
 
             if (!firstTime)
             {
-
                 firstTime = true;
-                StartCoroutine(PlayerFall(0.5f));
-
-                StartCoroutine(LoadNextLevel(2f));
+                globoColliderEnable();
             }
         }
+    }
+
+    private void globoColliderEnable()
+    {
+
+        foreach (Globo1script globo in globos)
+        {
+            globo.transform.gameObject.SetActive(true);
+        }
+
     }
 
     IEnumerator ActiveBocata(float waitTime, Transform _bocata)
@@ -45,19 +53,29 @@ public class Messages : MonoBehaviour
         _bocata.gameObject.SetActive(true);
     }
 
-    IEnumerator PlayerFall(float waitTime)
+    private void LoadNextLevel()
     {
-        yield return new WaitForSeconds(waitTime);
-        spacechipControls.SpaceChipDead();
+        StartCoroutine(LoadNextLevel(4f));
     }
-
     IEnumerator LoadNextLevel(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
         globosFirs.SetActive(false);
         globosSecond.SetActive(true);
         nextLevel.SetActive(true);
-        Debug.Log("hello");
+
     }
+
+    void OnEnable()
+    {
+        SpaceShipCollision.OnCollisionDeadly += LoadNextLevel;
+
+    }
+    void OnDisable()
+    {
+        SpaceShipCollision.OnCollisionDeadly -= LoadNextLevel;
+
+    }
+
 
 }

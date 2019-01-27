@@ -10,6 +10,8 @@ public class Wind : MonoBehaviour
 
 
     [SerializeField] GameObject nextLevel;
+    [SerializeField]
+    ParticleSystem wind;
     bool firstTime;
 
 
@@ -32,17 +34,32 @@ public class Wind : MonoBehaviour
             {
 
                 firstTime = true;
-                StartCoroutine(PlayerFall(0.5f));
-
-                StartCoroutine(LoadNextLevel(2f));
+                StartCoroutine(WindBlow(0.5f));
+                StartCoroutine(WindBlow(4f));
+                StartCoroutine(WindBlow(8.5f));
+                StartCoroutine(PlayerFall(11.5f));
+                StartCoroutine(LoadNextLevel(16f));
             }
         }
     }
 
-    IEnumerator ActiveBocata(float waitTime, Transform _bocata)
+    IEnumerator WindBlow(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        _bocata.gameObject.SetActive(true);
+        spacechipControls.force.force = new Vector2(15f, 0);
+        wind.Play();
+
+        StartCoroutine(WindBlow2(waitTime * 2));
+
+    }
+
+    IEnumerator WindBlow2(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+
+        wind.Stop();
+
+        spacechipControls.force.force = new Vector2(0f, 0);
     }
 
     IEnumerator PlayerFall(float waitTime)
@@ -55,6 +72,5 @@ public class Wind : MonoBehaviour
     {
         yield return new WaitForSeconds(waitTime);
         nextLevel.SetActive(true);
-        Debug.Log("hello");
     }
 }

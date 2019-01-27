@@ -102,8 +102,8 @@ ModelImporter:
     - serializedVersion: 16
       name: GetHit
       takeName: Armature|ArmatureAction.001
-      firstFrame: 0
-      lastFrame: 20
+      firstFrame: 5.2
+      lastFrame: 17.6
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -111,7 +111,7 @@ ModelImporter:
       loop: 0
       hasAdditiveReferencePose: 0
       loopTime: 1
-      loopBlend: 0
+      loopBlend: 1
       loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
