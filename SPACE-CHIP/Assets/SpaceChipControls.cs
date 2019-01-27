@@ -16,7 +16,7 @@ public class SpaceChipControls : MonoBehaviour
     public bool turbo, disabled, readyToControl;
     Vector3 oldPosition;
 
-    Animator anim;
+    public Animator anim;
 
     //Feedback
     ParticleSystem particleSystem0;
@@ -269,6 +269,9 @@ public class SpaceChipControls : MonoBehaviour
 
     public void SpaceChipDead()
     {
+        anim.SetBool("Control", false);
+        anim.SetTrigger("GetHit");
+
         loopFalling.Play();
         loopFalling.volume = 0.2f;
         DisableShip();
@@ -292,6 +295,8 @@ public class SpaceChipControls : MonoBehaviour
     private void ShipDead()
     {
         disabled = false;
+        anim.SetBool("Control", true);
+
         rigid.gravityScale = 0f;
         loopFalling.Stop();
         loopFalling.volume = 0;
