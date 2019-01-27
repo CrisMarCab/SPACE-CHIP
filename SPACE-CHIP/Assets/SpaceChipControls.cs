@@ -11,6 +11,7 @@ public class SpaceChipControls : MonoBehaviour
     Vector2 positionCentered;
 
     public float clampMinusX, clampSumX, timeTurboin, timerTurbo, zPosition;
+    [SerializeField]
     bool turbo, disabled, readyToControl;
     Vector3 oldPosition;
 
@@ -21,6 +22,9 @@ public class SpaceChipControls : MonoBehaviour
     [SerializeField]
     CinemachineVirtualCamera spaceCamera, startCamera;
 
+
+    //SFX
+    AudioSource launchLoop, launchExplosion, loadLoop, loadedExplosion, collision, loopFalling, backgroundMusic;
     // Start is called before the first frame update
     void Awake()
     {
@@ -30,6 +34,38 @@ public class SpaceChipControls : MonoBehaviour
         anim = transform.GetComponentInChildren<Animator>();
         particleSystem0 = transform.Find("Ship").GetComponentInChildren<ParticleSystem>();
         spaceCamera = FindObjectOfType<CinemachineVirtualCamera>();
+        foreach (AudioSource audio in GetComponentsInChildren<AudioSource>())
+        {
+            if (audio.clip.name == "Espacio mantenido despegue")
+            {
+                launchLoop = audio;
+            }
+            if (audio.clip.name == "Suelte  espaciodespegue")
+            {
+                launchExplosion = audio;
+            }
+            if (audio.clip.name == "Espacio mantenido")
+            {
+                loadLoop = audio;
+            }
+            if (audio.clip.name == "Soltar espacio")
+            {
+                loadedExplosion = audio;
+            }
+            if (audio.clip.name == "colision")
+            {
+                collision = audio;
+            }
+            if (audio.clip.name == "Loop cayendo")
+            {
+                loopFalling = audio;
+            }
+            if (audio.clip.name == "Comet")
+            {
+                backgroundMusic = audio;
+            }
+
+        }
     }
 
     private void Update()
@@ -40,15 +76,36 @@ public class SpaceChipControls : MonoBehaviour
 
             if (Input.GetKeyDown("space"))
             {
+                Debug.Log("hello" +
+                    "");
+                if (!backgroundMusic.isPlaying)
+                {
+                    backgroundMusic.Play();
+                }
+
                 timeTurboin = 0;
+                //First launch
+                if (!readyToControl)
+                {
+                    launchLoop.Play();
+                }
+
+                //REst
+                else
+                {
+                    loadLoop.Play();
+                }
             }
             if (Input.GetKey("space"))
             {
+                //First launch
                 if (!readyToControl)
                 {
+
                     vibrationLoop();
                     timeTurboin += 48f * Time.deltaTime;
                 }
+                //REst
                 else
                 {
                     timeTurboin += 24f * Time.deltaTime;
@@ -58,20 +115,26 @@ public class SpaceChipControls : MonoBehaviour
             {
                 StopVibration();
                 turbo = true;
+                //First launch
+
                 if (!readyToControl)
                 {
                     force.relativeForce = new Vector2(0, Mathf.Clamp(timeTurboin, 0, 36));
                     rigid.AddRelativeForce(new Vector2(0, 40), ForceMode2D.Impulse);
                     StartCameraDisable();
+
+                    launchLoop.Stop();
+                    launchExplosion.Play();
                 }
+                //REst
                 else
                 {
                     force.relativeForce = new Vector2(0, Mathf.Clamp(timeTurboin, 0, 18));
                     rigid.AddRelativeForce(new Vector2(0, 25), ForceMode2D.Impulse);
-
+                    loadedExplosion.Play();
+                    loadLoop.Stop();
                 }
                 timerTurbo = 0f;
-                readyToControl = true;
 
                 // resets gravity
                 rigid.gravityScale = 0.5f;
@@ -79,10 +142,11 @@ public class SpaceChipControls : MonoBehaviour
                 vibration();
             }
         }
-        else
+        else if (timerTurbo < 1.5f)
         {
             VisualFeedback();
         }
+
         timerTurbo += Time.deltaTime;
         //Walls
         rigid.position = new Vector2(Mathf.Clamp(rigid.position.x, clampMinusX, clampSumX), rigid.position.y);
@@ -186,15 +250,21 @@ public class SpaceChipControls : MonoBehaviour
 
     private void SpaceChipHitted()
     {
-
+        anim.SetBool("Control", false);
         StartCoroutine(ShipComeback(2F));
         DisableShip(4f);
+        if (!collision.isPlaying)
+        {
+            collision.Play();
+        }
     }
 
     public void SpaceChipDead()
     {
         StartCoroutine(ShipDead(10F));
         DisableShip(20f);
+        loopFalling.Play();
+
     }
 
     public void ResetChip()
@@ -206,15 +276,18 @@ public class SpaceChipControls : MonoBehaviour
     IEnumerator ShipComeback(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
+        anim.SetBool("Control", true);
         disabled = false;
-        rigid.gravityScale = 0.5f;
+        rigid.gravityScale = 1f;
         StartCoroutine(ReadyToControl(0.5F));
     }
     IEnumerator ShipDead(float waitTime)
     {
-        yield return new WaitForSeconds(waitTime);
+        yield return new WaitForSeconds(5);
         disabled = false;
         rigid.gravityScale = 0f;
+        loopFalling.Stop();
+
     }
 
 

@@ -21,7 +21,6 @@ public class Messages : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            StartCoroutine(PlayerFall(0.5f));
             /*
             foreach (Transform bocata in bocatas)
             {
@@ -29,9 +28,13 @@ public class Messages : MonoBehaviour
             }
             */
 
-            if (firstTime)
+            if (!firstTime)
             {
-                LoadNextLevel(2f);
+
+                firstTime = true;
+                StartCoroutine(PlayerFall(0.5f));
+
+                StartCoroutine(LoadNextLevel(2f));
             }
         }
     }
@@ -54,6 +57,7 @@ public class Messages : MonoBehaviour
         globosFirs.SetActive(false);
         globosSecond.SetActive(true);
         nextLevel.SetActive(true);
+        Debug.Log("hello");
     }
 
 }

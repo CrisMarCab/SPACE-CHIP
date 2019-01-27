@@ -34,10 +34,13 @@ public class Starting : MonoBehaviour
                 manibelaTope = audio;
             }
         }
-    }
 
-    // Update is called once per frame
-    void Update()
+
+
+        }
+
+        // Update is called once per frame
+        void Update()
     {
         if (!shipready)
         {
