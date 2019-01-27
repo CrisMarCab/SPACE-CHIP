@@ -22,6 +22,7 @@ public class Beyond : MonoBehaviour
         if (cameThrough == false)
         {
             lastVoice.Play();
+            masAlla.Play();
         }
 
         cameThrough = true;
