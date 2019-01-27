@@ -10,7 +10,7 @@ public class Starting : MonoBehaviour
 
     Rigidbody2D manibelaRigid;
 
-    AudioSource wind, manibelaLoop, manibelaTope, Narrative1, Narrative2, Narrative3, Narrative4;
+    AudioSource manibelaLoop, manibelaTope, Narrative1, Narrative2, Narrative3, Narrative4;
     [SerializeField]
     float desiredLoopVolume = 1;
 
@@ -51,11 +51,6 @@ public class Starting : MonoBehaviour
             {
                 Narrative4 = audio;
             }
-            else if (audio.clip.name == "Viento ambiente")
-            {
-                wind = audio;
-            }
-
         }
 
         Preparation(true);
@@ -94,7 +89,7 @@ public class Starting : MonoBehaviour
         {
             manibelaTope.Play();
             manibelaLoop.volume = 0;
-            wind.Stop();
+
 
             shipready = true;
             spaceControls.enabled = true;
@@ -111,10 +106,9 @@ public class Starting : MonoBehaviour
         spaceControls.rigid.gravityScale = 0f;
         spaceControls.ResetChip();
         spaceControls.loopFalling.Stop();
-        spaceControls.anim.SetBool("Control", true);
+
         spaceControls.enabled = false;
 
-        wind.Play();
         //Reset position
         yPosition = 0;
         Vector3 position = new Vector3(0, Mathf.Clamp(yPosition, 0, 11), 0);
@@ -134,14 +128,13 @@ public class Starting : MonoBehaviour
     {
         if (level1.activeSelf && !level2.activeSelf && !level3.activeSelf)
         {
-            if (boolNivel1)
+            if (!boolNivel1)
             {
                 //play narrative
                 Narrative1.Play();
                 boolNivel1 = true;
             }
         }
-
         if (level1.activeSelf && level2.activeSelf && !level3.activeSelf)
         {
             if (!boolNivel2)
