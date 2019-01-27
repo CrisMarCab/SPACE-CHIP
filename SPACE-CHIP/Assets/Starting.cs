@@ -92,6 +92,7 @@ public class Starting : MonoBehaviour
 
             shipready = true;
             spaceControls.enabled = true;
+            spaceControls.disabled = false;
         }
     }
 

@@ -7,6 +7,9 @@ public class Globo1script : MonoBehaviour
     Vector3 position;
 
     List<Collider> colliders = new List<Collider>();
+
+    Transform canvas;
+    Quaternion rotationCanvas;
     // Start is called before the first frame update
     void Start()
     {
@@ -16,13 +19,22 @@ public class Globo1script : MonoBehaviour
         {
             colliders.Add(col);
         }
+        if (transform.Find("Plane").Find("Canvas") != null)
+        {
+            canvas = transform.Find("Plane").Find("Canvas");
+            rotationCanvas = canvas.transform.rotation;
 
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         timer += Time.deltaTime;
+        if (canvas != null)
+        {
+            canvas.transform.rotation = rotationCanvas;
+        }
         if (timer > 2)
         {
             direction = -direction;

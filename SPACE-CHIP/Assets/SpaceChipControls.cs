@@ -11,7 +11,9 @@ public class SpaceChipControls : MonoBehaviour
     Vector2 positionCentered;
 
     public float clampMinusX, clampSumX, timeTurboin, timerTurbo = 2f, zPosition;
-    bool turbo, disabled, readyToControl;
+
+    [SerializeField]
+    public bool turbo, disabled, readyToControl;
     Vector3 oldPosition;
 
     Animator anim;
@@ -329,14 +331,14 @@ public class SpaceChipControls : MonoBehaviour
         SpaceShipCollision.OnCollision += SpaceChipHitted;
         SpaceShipCollision.OnCollisionDeadly += SpaceChipDead;
 
-        Starting.home += ShipDead;
+        SpaceShipCollision.home += ShipDead;
 
     }
     void OnDisable()
     {
         SpaceShipCollision.OnCollision -= SpaceChipHitted;
         SpaceShipCollision.OnCollisionDeadly -= SpaceChipDead;
-        Starting.home -= ShipDead;
+        SpaceShipCollision.home -= ShipDead;
 
 
     }
