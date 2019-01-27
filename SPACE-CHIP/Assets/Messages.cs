@@ -7,7 +7,10 @@ public class Messages : MonoBehaviour
     [SerializeField] List<Transform> bocatas = new List<Transform>();
     SpaceChipControls spacechipControls;
     int index = 0;
-    GameObject limit, nextLevel;
+
+
+    [SerializeField] GameObject globosFirs, globosSecond, nextLevel;
+    bool firstTime;
 
 
     private void Start()
@@ -25,6 +28,11 @@ public class Messages : MonoBehaviour
                 StartCoroutine(ActiveBocata(Random.Range(0, 5), bocata));
             }
             */
+
+            if (firstTime)
+            {
+                LoadNextLevel(2f);
+            }
         }
     }
 
@@ -38,6 +46,14 @@ public class Messages : MonoBehaviour
     {
         yield return new WaitForSeconds(waitTime);
         spacechipControls.SpaceChipDead();
+    }
+
+    IEnumerator LoadNextLevel(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        globosFirs.SetActive(false);
+        globosSecond.SetActive(true);
+        nextLevel.SetActive(true);
     }
 
 }
